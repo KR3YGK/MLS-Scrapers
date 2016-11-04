@@ -10,24 +10,30 @@ import os
 from BeautifulSoup import *
 
 #enter difference site if want different year
-url = raw_input('Enter MLS Schedule Site to Scrape - ')
-if len(url) < 1 : url = "http://www.mlssoccer.com/schedule?month=all&year=2013&club=select&club_options=9&op=Update&form_build_id=form-pQu0jXvZXgTb2mTvMtNk-qacP9KN1JXFrpBjeTMH0qo&form_id=mp7_schedule_hub_search_filters_form"
+year = raw_input('Enter year to scrape - ')
+url = "http://www.mlssoccer.com/schedule?month=all&year="+year+"&club=select&club_options=9&op=Update&form_build_id=form-pQu0jXvZXgTb2mTvMtNk-qacP9KN1JXFrpBjeTMH0qo&form_id=mp7_schedule_hub_search_filters_form"
 
+if len(year) < 1 : 
+    url = "http://www.mlssoccer.com/schedule?month=all&year=2013&club=select&club_options=9&op=Update&form_build_id=form-pQu0jXvZXgTb2mTvMtNk-qacP9KN1JXFrpBjeTMH0qo&form_id=mp7_schedule_hub_search_filters_form"
+    print "Scraping default year 2013."
+    year=2013
+    
 #Filename chosen here. Change for other years.  Overwrite if it already exists.
-if os.path.exists('mls2013.csv'):
-    os.remove('mls2013.csv')
-
+if os.path.exists('mls'+year+'.csv'):
+    os.remove('mls'+year+'.csv')
+    
 html = urllib.urlopen(url).read()
 
 links=[]
 #gets all the links for every regular season game.  Change if year changed.
-hrefs=re.findall('href="(http://matchcenter.mlssoccer.com/matchcenter/2013.*?)"',html)
+hrefs=re.findall('href="(http://matchcenter.mlssoccer.com/matchcenter/'+year+'.*?)"',html)
 for h in hrefs:
     #adds '/boxscore' to end of href 
     boxscore=h+"/boxscore"
     link=[boxscore]
     #links now a list of all boxscore hrefs for season
     links=links+link
+
    
 #iteration number       
 i=0
@@ -53,7 +59,7 @@ for link in links:
     table=soup.findAll('table',{ "class" : "ps-table" })
    
     
-    with open('mls2014TEST.csv', 'a') as csvfile:
+    with open('mls'+year+'.csv', 'a') as csvfile:
         tnum=0
         for t in table:
             tnum=tnum+1
